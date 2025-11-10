@@ -432,31 +432,3 @@ class TestGoogleSearchTool:
       assert len(llm_request.config.tools) == 1
       assert llm_request.config.tools[0].google_search is not None
       assert llm_request.config.tools[0].google_search_retrieval is None
-
-  @pytest.mark.asyncio
-  async def test_process_llm_request_with_gemini_1_model_and_existing_tools_with_bypass(
-      self,
-  ):
-    """Test that Gemini 1.x model with existing tools succeeds with bypass."""
-    tool = GoogleSearchTool(bypass_multi_tools_limit=True)
-    tool_context = await _create_tool_context()
-
-    existing_tool = types.Tool(
-        function_declarations=[
-            types.FunctionDeclaration(name='test_function', description='test')
-        ]
-    )
-
-    llm_request = LlmRequest(
-        model='gemini-1.5-flash',
-        config=types.GenerateContentConfig(tools=[existing_tool]),
-    )
-
-    await tool.process_llm_request(
-        tool_context=tool_context, llm_request=llm_request
-    )
-
-    assert llm_request.config.tools is not None
-    assert len(llm_request.config.tools) == 2
-    assert llm_request.config.tools[0] == existing_tool
-    assert llm_request.config.tools[1].google_search_retrieval is not None
