@@ -57,7 +57,7 @@ class GoogleSearchTool(BaseTool):
     llm_request.config = llm_request.config or types.GenerateContentConfig()
     llm_request.config.tools = llm_request.config.tools or []
     if is_gemini_1_model(llm_request.model):
-      if llm_request.config.tools:
+      if llm_request.config.tools and not self.bypass_multi_tools_limit:
         raise ValueError(
             'Google search tool cannot be used with other tools in Gemini 1.x.'
         )
